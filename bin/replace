@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# @(#) replace v0.1.0 2015-08-05
+#
+# Usage:
+#   replace foo bar **/*.rb
+#
+# Description:
+#   replace find and replace by a given list of files
+#
+######################################################################
+
+. "$DOTPATH"/etc/lib/corelib.sh
+
+bin="$(available "pt:ag:ack")"
+
+if [[ $1 =~ ^-h|--help$ ]]; then
+    echo "usage: replace wordA wordB [file]" 1>&2
+    echo "  replace find and replace by a given list of files" 1>&2
+    echo "  e.g., replace foo bar **/*.rb" 1>&2
+    exit 1
+fi
+
+if [ $# -lt 3 ]; then
+    echo "too few arguments" 1>&2
+    exit 1
+fi
+
+if [ -z "$bin" ]; then
+    echo "pt,ag,ack: not found" 1>&2
+    exit 1
+fi
+
+#find_this="$(echo "$1" | sed "s / \\\/ g")"
+#replace_with="$(echo "$2" | sed "s / \\\/ g")"
+find_this="${1//\//\\\/}"
+replace_with="${2//\//\\\/}"
+shift
+shift
+echo "$bin" -l "$find_this" "$@"
+echo xargs sed -i '' "s/$find_this/$replace_with/g"
