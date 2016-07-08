@@ -1,0 +1,124 @@
+#########
+#
+# メモ
+#
+ 
+# C- と M- の意味
+# C-* ... Ctrl + *
+# M-* ...  Alt + *
+ 
+# bind-key の -r オプション
+# repeat-timeミリ秒の間、2度目以降はPrefixを入力せず
+# 連続して上下左右を含む同操作を行うことができる
+ 
+# プレフィックスは Pre と表記
+# この設定では Ctrl-x にしてある
+#@
+
+set -g default-command ""
+## Prfix
+set -g prefix C-o
+unbind C-b
+
+### system
+## statusbar settings
+# ステータスバーをトップに配置する
+set -g status-position top
+set -g status-bg colour100
+setw -g window-status-current-fg black
+setw -g window-status-current-bg white
+
+# 左右のステータスバーの長さを決定する
+set -g status-left-length 90
+set -g status-right-length 90
+
+# #H => マシン名
+# #P => ペイン番号
+# 最左に表示
+set -g status-left '#H:[#P]'
+
+# ステータスバーを Utf-8 に対応
+#set -g status-utf8 on
+
+# ステータスバーを1秒毎に描画し直す
+set -g status-interval 1
+
+# センタライズ（主にウィンドウ番号など）
+set -g status-justify centre
+
+# copy to clipboard
+#if-shell "test -w /dev/clipboard" "bind-key > save-buffer /dev/clipboard"
+
+# copy to clipboard
+#bind-key < run "cat /dev/clipboard | tmux load-buffer - && tmux paste-buffer"
+
+# clipboard setting for ubuntu "requrie apt-get install xclip or xsel"
+#run-shell ~/tmux-plugins/tmux-yank/yank.tmux
+#set -g @yank_selection 'primary'
+
+
+# Prefix+v でコピーモード開始
+bind-key v copy-mode \; display "Copy mode!"
+#bind-key -t vi-copy v begin-selection
+
+# Prefix+Enter/y でコピー
+bind-key -t vi-copy Enter copy-pipe "reattach-to-user-namespace pbcopy"
+bind-key -t vi-copy y     copy-pipe "reattach-to-user-namespace pbcopy"
+
+# Prefix+p でペースト
+# クリップボードにも保存されているので Cmd-v でもペースト可能
+bind-key p paste-buffer
+
+## 256 color
+set -g default-terminal "screen-256color"
+
+## Japanese
+#setw -g utf8 on
+
+
+## Split window
+bind | split-window -h
+bind - split-window -v
+
+## change color active pane
+set -g pane-active-border-fg white
+set -g pane-active-border-bg yellow
+
+## resize pane
+bind H resize-pane -L 5
+bind J resize-pane -D 5
+bind K resize-pane -U 5
+bind L resize-pane -R 5
+bind -r H resize-pane -L 5
+bind -r J resize-pane -D 5
+bind -r K resize-pane -U 5
+bind -r L resize-pane -R 5
+## key buind (move pane)
+#bind -n S-left select-pane -L
+#bind -n S-down select-pane -D
+#bind -n S-up select-pane -U
+#bind -n S-right select-pane -R
+bind h select-pane -L
+bind j select-pane -D
+bind k select-pane -U
+bind l select-pane -R
+
+## key bind (copy mode)
+bind-key -t vi-copy Enter copy-pipe "cat | xsel -i --clipboard"
+set-window-option -g mode-keys vi
+bind / list-keys -t vi-copy
+#bind / list-keys -t emacs-copy
+
+## base setting (buffer scroll)
+set-option -g buffer-limit 10000
+set-option -g mouse on
+bind -n WheelUpPane if-shell -F -t = "#{mouse_any_flag}" "send-keys -M" "if -Ft= '#{pane_in_mode}' 'send-keys -M' 'copy-mode -e'"
+set -g terminal-overrides 'xterm*:smcup@:rmcup@'
+
+## reload config
+bind r source-file ~/.tmux.conf \; display-message "Reload Config!!"
+
+
+
+
+
